@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  backend:
+    build: .
+    container_name: "FastAPI"
+    entrypoint: ["bash", "entrypoint.sh"]
+    ports:
+    - "8003:8003"
+    volumes:
+      - .:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      - es
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    container_name: "es"
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+
+volumes:
+  certs:
+    external: false
+  esdata01:
+    external: false
