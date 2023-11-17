@@ -5,7 +5,7 @@ from elasticsearch import AsyncElasticsearch
 from search_services import SearchService
 
 
-search_router = APIRouter(prefix="/api/search", tags=["search_service"])
+search_router = APIRouter(prefix="/api/v1/search", tags=["search_service"])
 
 
 @search_router.post('/phone')
