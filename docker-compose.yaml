@@ -3,10 +3,10 @@ version: '3.7'
 services:
   backend:
     build: .
-    container_name: "FastAPI"
+    container_name: "SearchService"
     entrypoint: ["bash", "entrypoint.sh"]
     ports:
-    - "8003:8003"
+    - ${BACKEND_PORTS}
     volumes:
       - .:/usr/src/app/
     env_file:
@@ -21,10 +21,10 @@ services:
       - certs:/usr/share/elasticsearch/config/certs
       - esdata01:/usr/share/elasticsearch/data
     ports:
-      - "9200:9200"
+      - ${ES_PORTS}
     environment:
-      - xpack.security.enabled=false
-      - discovery.type=single-node
+      - .env.es
+      - .env
 
 volumes:
   certs:

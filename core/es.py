@@ -6,23 +6,34 @@ from constants import FOOD_INDEX, PHONES_INDEX
 
 
 class AsyncElasticClient:
+    _instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if not isinstance(cls._instance, cls):
+            cls._instance = super().__new__(cls, *args, **kwargs)
+        return cls._instance
 
     def __init__(self) -> None:
-        self.es: None | AsyncElasticClient = None
+        self._es: None | AsyncElasticClient = None
 
     async def init(self) -> None:
-        self.es = AsyncElasticsearch(
+        self._es = AsyncElasticsearch(
             [
-                {'host': app_settings.ES_HOST, 'port': app_settings.ES_PORT, "scheme": "http"},
+                {'host': app_settings.ES_HOST, 'port': app_settings.ES_PORT, "scheme": app_settings.SCHEME},
             ]
         )
-        if not await self.es.indices.exists(index=[FOOD_INDEX, PHONES_INDEX]):
-            await self.es.indices.create(index=PHONES_INDEX, body=phones_mapping)
-            await self.es.indices.create(index=FOOD_INDEX, body=food_mapping)
+        if not await self._es.indices.exists(index=[FOOD_INDEX, PHONES_INDEX]):
+            await self._es.indices.create(index=PHONES_INDEX, body=phones_mapping)
+            await self._es.indices.create(index=FOOD_INDEX, body=food_mapping)
+
+    async def shutdown(self) -> None:
+        await self._es.close()
+
+    @property
+    def es(self) -> AsyncElasticsearch:
+        return self._es
 
 
-client = AsyncElasticClient()
-
-
-async def get_es() -> AsyncGenerator[client.es, None]:
+async def get_es() -> AsyncGenerator[AsyncElasticsearch, None]:
+    client = AsyncElasticClient()
     yield client.es
