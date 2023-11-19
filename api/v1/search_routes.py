@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from schemas import PhoneModel, FoodModel
 from core.es import get_es
 from elasticsearch import AsyncElasticsearch
-from search_services import SearchService
+from search_service.search_services import SearchService
 
 
 search_router = APIRouter(prefix="/api/v1/search", tags=["search_service"])

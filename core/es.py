@@ -14,7 +14,8 @@ class AsyncElasticClient:
         return cls._instance
 
     def __init__(self) -> None:
-        self._es: None | AsyncElasticClient = None
+        if self._instance is None:
+            self._es: None | AsyncElasticClient = None
 
     async def init(self) -> None:
         self._es = AsyncElasticsearch(
