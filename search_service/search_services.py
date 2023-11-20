@@ -12,7 +12,9 @@ class SearchService:
                                   document=document.model_dump(exclude={'id'}),
                                   id=document.id)
         producer = AIOProducer()
-        await producer.send_data(document.model_dump(include={'action': 'add_phone'}))
+        message = document.model_dump()
+        message['action'] = 'add_phone'
+        await producer.send_data(message)
         return response['result']
 
     @staticmethod
@@ -21,19 +23,23 @@ class SearchService:
                                   document=document.model_dump(exclude={'id'}),
                                   id=document.id)
         producer = AIOProducer()
-        await producer.send_data(document.model_dump(include={'action': 'add_food'}))
+        message = document.model_dump()
+        message['action'] = 'add_food'
+        await producer.send_data(message)
         return response['result']
 
     @staticmethod
     async def get_phone(es: AsyncElasticsearch, document_id: str) -> dict:
         response = await es.get(index=PHONES_INDEX, id=document_id)
         producer = AIOProducer()
-        await producer.send_data(response['_source'].update({'action': 'search_phone'}))
+        message = {"id": document_id, "action": "search_phone"}
+        await producer.send_data(message)
         return response['_source']
 
     @staticmethod
     async def get_food(es: AsyncElasticsearch, document_id: str) -> dict:
         response = await es.get(index=FOOD_INDEX, id=document_id)
         producer = AIOProducer()
-        await producer.send_data(response['_source'].update({'action': 'search_food'}))
+        message = {"id": document_id, "action": "search_food"}
+        await producer.send_data(message)
         return response['_source']
