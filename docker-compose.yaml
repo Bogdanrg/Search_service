@@ -1,0 +1,66 @@
+version: '3.7'
+
+services:
+  backend:
+    build: .
+    container_name: "SearchService"
+    entrypoint: ["bash", "entrypoint.sh"]
+    ports:
+    - "${BACKEND_HOST}:${BACKEND_CONT}"
+    volumes:
+      - .:/usr/src/app/
+    env_file:
+      - .env
+    depends_on:
+      - es
+    networks:
+      - data
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+    container_name: "es"
+    volumes:
+      - certs:/usr/share/elasticsearch/config/certs
+      - esdata01:/usr/share/elasticsearch/data
+    ports:
+      - "${ES_PORTS}:${ES_PORTS}"
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - .env
+    networks:
+      - data
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "${ZOOKEEPER_PORTS}:${ZOOKEEPER_PORTS}"
+    env_file:
+      - .env
+    networks:
+      - data
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: "kafka"
+    ports:
+      - "${KAFKA_PORTS}:${KAFKA_PORTS}"
+    depends_on:
+      - zookeeper
+    env_file:
+      - .env
+    networks:
+      - data
+    volumes:
+      - ./logs:/tmp/docker/kafka/logs
+      - ./data:/tmp/docker/kafka/data
+
+volumes:
+  certs:
+    external: false
+  esdata01:
+    external: false
+
+networks:
+  data:
+    external: true
