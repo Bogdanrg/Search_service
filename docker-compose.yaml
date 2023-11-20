@@ -33,6 +33,8 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
+    ports:
+      - "${ZOOKEEPER_PORTS}:${ZOOKEEPER_PORTS}"
     env_file:
       - .env
     networks:
@@ -41,6 +43,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: "kafka"
+    ports:
+      - "${KAFKA_PORTS}:${KAFKA_PORTS}"
     depends_on:
       - zookeeper
     env_file:
