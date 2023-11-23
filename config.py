@@ -1,31 +1,52 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-class Settings(BaseSettings):
-    ZOOKEEPER_CLIENT_PORT: int
-    ZOOKEEPER_TICK_TIME: int
-    KAFKA_BROKER_ID: int
-    KAFKA_ZOOKEEPER_CONNECT: str
-    KAFKA_ADVERTISED_LISTENERS: str
-    KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: str
-    KAFKA_INTER_BROKER_LISTENER_NAME: str
-    KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: int
-    KAFKA_TOPIC_NAME: str
+class ZookeeperSettings(BaseSettings):
+    CLIENT_PORT: int
+    TICK_TIME: int
+
+    model_config = SettingsConfigDict(env_prefix="ZOOKEEPER_", env_file=".env")
+
+
+class KafkaSettings(BaseSettings):
+    BROKER_ID: int
+    ZOOKEEPER_CONNECT: str
+    ADVERTISED_LISTENERS: str
+    LISTENER_SECURITY_PROTOCOL_MAP: str
+    INTER_BROKER_LISTENER_NAME: str
+    OFFSETS_TOPIC_REPLICATION_FACTOR: int
+    TOPIC_NAME: str
+    PORTS: str
     BOOTSTRAP_SERVER: str
+
+    model_config = SettingsConfigDict(env_prefix="KAFKA_", env_file=".env")
+
+
+class ESSettings(BaseSettings):
+    PORTS: int
+    URL: str
+    HOST: str
+    PORT: int
+    SCHEME: str
+
+    model_config = SettingsConfigDict(env_prefix="ES_", env_file=".env")
+
+
+class AppSettings(BaseSettings):
     UVICORN_HOST: str
     UVICORN_PORT: int
     BACKEND_HOST: int
     BACKEND_CONT: int
-    ES_PORTS: int
-    APP_TITLE: str
-    ES_URL: str
-    ES_HOST: str
-    ES_PORT: int
-    SCHEME: str
-    KAFKA_PORTS: int
-    ZOOKEEPER_PORTS: int
+    TITLE: str
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_prefix="APP_", env_file=".env")
 
 
-app_settings = Settings()
+class Settings(BaseSettings):
+    app: AppSettings = AppSettings()
+    kafka: KafkaSettings = KafkaSettings()
+    zookeeper: ZookeeperSettings = ZookeeperSettings()
+    es: ESSettings = ESSettings()
+
+
+settings = Settings()

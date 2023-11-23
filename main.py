@@ -1,10 +1,11 @@
 from fastapi import FastAPI
-from config import app_settings
+from config import settings
 from core.es import AsyncElasticClient
-from api.v1.search_routes import search_router
 from search_service.producer import AIOProducer
+from api.api_routes import api_router
 
-app = FastAPI(title=app_settings.APP_TITLE)
+
+app = FastAPI(title=settings.app.TITLE)
 
 
 @app.on_event("startup")
@@ -24,4 +25,4 @@ async def app_shutdown():
     await producer.stop()
 
 
-app.include_router(search_router)
+app.include_router(api_router)

@@ -1,6 +1,6 @@
 from typing import AsyncGenerator
 from elasticsearch import AsyncElasticsearch
-from config import app_settings
+from config import settings
 from mappings import food_mapping, phones_mapping
 from constants import FOOD_INDEX, PHONES_INDEX
 
@@ -20,7 +20,7 @@ class AsyncElasticClient:
     async def init(self) -> None:
         self._es = AsyncElasticsearch(
             [
-                {'host': app_settings.ES_HOST, 'port': app_settings.ES_PORT, "scheme": app_settings.SCHEME},
+                {'host': settings.es.HOST, 'port': settings.es.PORT, "scheme": settings.es.SCHEME},
             ]
         )
         if not await self._es.indices.exists(index=[FOOD_INDEX, PHONES_INDEX]):

@@ -6,7 +6,7 @@ services:
     container_name: "SearchService"
     entrypoint: ["bash", "entrypoint.sh"]
     ports:
-    - "${BACKEND_HOST}:${BACKEND_CONT}"
+    - "${APP_BACKEND_HOST}:${APP_BACKEND_CONT}"
     volumes:
       - .:/usr/src/app/
     env_file:
@@ -34,7 +34,7 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     ports:
-      - "${ZOOKEEPER_PORTS}:${ZOOKEEPER_PORTS}"
+      - "${KAFKA_ZOOKEEPER_PORTS}:${KAFKA_ZOOKEEPER_PORTS}"
     env_file:
       - .env
     networks:
